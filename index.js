@@ -10,10 +10,10 @@ app.use(express.json())
 app.use(cors())
 app.use(express.static('build'))
 
-morgan.token('req_body', (req, res) => {
+morgan.token('req_body', (req) => {
     return JSON.stringify(req.body)
 })
-const morganFormat = 
+const morganFormat =
     ':method :url :status :res[content-length] - :response-time ms :req_body'
 
 app.use(morgan(morganFormat))
@@ -44,14 +44,13 @@ app.use(morgan(morganFormat))
 app.get('/info', (req, res) => {
     Person.find({})
         .then(persons => {
-            const response = 
+            const response =
                 `<div>
                     <p>Phonebook has info for ${persons.length} people</p>
                     <p>${(new Date()).toString()}</p>
                 </div>`
-        res.send(response)
+            res.send(response)
         })
-    
 })
 
 app.get('/api/persons', (req, res) => {
@@ -83,7 +82,7 @@ app.get('/api/persons/:id', (req, res, next) => {
 
 app.delete('/api/persons/:id', (req, res, next) => {
     Person.findByIdAndRemove(req.params.id)
-        .then(result => res.status(204).end())
+        .then(() => res.status(204).end())
         .catch(error => next(error))
 
 
@@ -112,9 +111,7 @@ app.post('/api/persons', (req, res, next) => {
         name: body.name,
         number: body.number,
     })
-    
     //person.id = id
-    
     //persons = persons.concat(person)
     //res.json(person)
 
@@ -136,7 +133,7 @@ app.put('/api/persons/:id', (req, res, next) => {
 })
 
 const unknownEndpoint = (req, res) => {
-    res.status(404).send({ error: 'unknown endpoint'})
+    res.status(404).send({ error: 'unknown endpoint' })
 }
 
 app.use(unknownEndpoint)
@@ -144,7 +141,7 @@ app.use(unknownEndpoint)
 const errorHandler = (error, req, res, next) => {
     console.log(error.message)
     if (error.name === 'CastError') {
-        return res.status(400).send({ error: 'malformatted id '})
+        return res.status(400).send({ error: 'malformatted id ' })
     }
     if (error.name === 'ValidationError') {
         return res.status(400).send({ error: error.message })
