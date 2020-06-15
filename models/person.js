@@ -1,4 +1,5 @@
 const mongoose = require('mongoose')
+mongoose.set('useFindAndModify', false)
 
 
 //const password = process.argv[2]
